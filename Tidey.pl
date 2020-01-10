@@ -2,7 +2,7 @@
 
 use LWP::Simple;
 
-my $url = 'fcdac066d289192fc51d8497187c447c4b9891a0';
+my $url = 'https://api.sunrise-sunset.org/json?lat=-33.79&lng=151.02';
 
 my $content = get $url;
 die "Couldn't get $url" unless defined $content;
