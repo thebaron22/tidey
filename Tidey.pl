@@ -8,8 +8,10 @@ use LWP::Simple;
 use JSON;
 use Data::Dumper;
 
+my $TZ = 'Australia/Sydney';
 my $lat = "-33.79";
 my $long = "151.02";
+
 my $url = "https://api.sunrise-sunset.org/json?lat=$lat&lng=$long&formatted=0";
 my $json = get $url || die "Couldn't get $url";
 
@@ -26,15 +28,20 @@ my $sunrise = $hash->{'results'}{'sunrise'};
 
 print "Sunrise: $sunrise\tSunset: $sunset\n\n";
 
-my $fmt = Time::Strptime::Format->new('%Y-%m-%dT%H:%M:%S%z', { time_zone => 'Australia/Sydney' });
-my ($epoch, $offset) = $fmt->parse('2014-01-01T00:00:00+0000');
+$sunrise =~ s/\:(..)$/$1/;
+print "$sunrise\n\n";
 
-print "epoch: $epoch\t offset: $offset\n\n";
+my $fmt = Time::Strptime::Format->new('%Y-%m-%dT%H:%M:%S%z', { time_zone => $TZ });
+($sunrise, my $offset) = $fmt->parse($sunrise);
+
+print "Sunrise epoch: $sunrise\t offset: $offset\n\n";
 
 $sunset =~ s/\:(..)$/$1/;
 print "$sunset\n\n";
 
-$fmt = Time::Strptime::Format->new('%Y-%m-%dT%H:%M:%S%z', { time_zone => 'Australia/Sydney' });
-($epoch, $offset) = $fmt->parse($sunset);
+$fmt = Time::Strptime::Format->new('%Y-%m-%dT%H:%M:%S%z', { time_zone => $TZ });
+($sunset, $offset) = $fmt->parse($sunset);
 
-print "epoch: $epoch\t offset: $offset\n\n";
+print "Sunset epoch: $sunset\t offset: $offset\n\n";
+
+print "Sunset - Sunrise: " . ($sunset - $sunrise)/3600 . "\n\n";
