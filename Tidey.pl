@@ -7,6 +7,7 @@ use Time::Strptime qw/strptime/;
 use LWP::Simple;
 use JSON;
 use Data::Dumper;
+use DateTime;
 
 my $TZ = 'Australia/Sydney';
 my $lat = "-33.79";
@@ -45,3 +46,13 @@ $fmt = Time::Strptime::Format->new('%Y-%m-%dT%H:%M:%S%z', { time_zone => $TZ });
 print "Sunset epoch: $sunset\t offset: $offset\n\n";
 
 print "Sunset - Sunrise: " . ($sunset - $sunrise)/3600 . "\n\n";
+
+print "Sunrise local: " . localtime($sunrise) . "\n\n";
+
+my $delta = ($sunset - $sunrise) / 30;
+
+for (my $i = $sunrise; $i < $sunset; $i += $delta) {
+  print localtime($i) . "\n";
+}
+
+print "Sunset local: " . localtime($sunset) . "\n\n";
