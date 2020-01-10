@@ -1,6 +1,9 @@
-my $url = 'fcdac066d289192fc51d8497187c447c4b9891a0';
+#!/usr/bin/perl
 
 use LWP::Simple;
+
+my $url = 'fcdac066d289192fc51d8497187c447c4b9891a0';
+
 my $content = get $url;
 die "Couldn't get $url" unless defined $content;
 
