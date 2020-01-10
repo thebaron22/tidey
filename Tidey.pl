@@ -6,9 +6,8 @@ use warnings;
 use Time::Strptime qw/strptime/;
 use LWP::Simple;
 use JSON;
-use Data::Dumper;
 use DateTime;
-use CGI ':standard';
+use HTML::Template;
 
 my $TZ = 'Australia/Sydney';
 
@@ -26,54 +25,54 @@ my $json = get $url || die "Couldn't get $url";
 my $hash = from_json($json);
 die "error received in sunset/sunrise data.\n\n$json" unless $hash->{'status'} eq "OK";
 
-print  Dumper($hash) . "\n";
-
-print $hash->{'results'} . "\n";
-
-print $hash->{'results'}{'sunset'} . "\n\n";
 my $sunset  = $hash->{'results'}{'sunset'};
 my $sunrise = $hash->{'results'}{'sunrise'};
 
-print "Sunrise: $sunrise\tSunset: $sunset\n\n";
 
 $sunrise =~ s/\:(..)$/$1/;
-print "$sunrise\n\n";
-
 my $fmt = Time::Strptime::Format->new('%Y-%m-%dT%H:%M:%S%z', { time_zone => $TZ });
 ($sunrise, my $offset) = $fmt->parse($sunrise);
 
-print "Sunrise epoch: $sunrise\t offset: $offset\n\n";
-
 $sunset =~ s/\:(..)$/$1/;
-print "$sunset\n\n";
-
 $fmt = Time::Strptime::Format->new('%Y-%m-%dT%H:%M:%S%z', { time_zone => $TZ });
 ($sunset, $offset) = $fmt->parse($sunset);
 
-print "Sunset epoch: $sunset\t offset: $offset\n\n";
-
-print "Sunset - Sunrise: " . ($sunset - $sunrise)/3600 . "\n\n";
-
-print "Sunrise local: " . localtime($sunrise) . "\n\n";
-
 my $delta = ($sunset - $sunrise) / 30;
-print "Delta: " . $delta / 60 . "\n\n";
+my %table;
 
 for (my $i = $sunrise; $i < $sunset; $i += $delta) {
-  print "spirit:\t" . localtime($i) . "\n";
+  $table{localtime($i)} = "Spirit";
   $i += $delta;
-  print "air:\t"    . localtime($i) . "\n";
+  $table{localtime($i)} = "Air";
   $i += $delta;
-  print "fire:\t"   . localtime($i) . "\n";
+  $table{localtime($i)} = "Fire";
   $i += $delta;
-  print "water:\t"  . localtime($i) . "\n";
+  $table{localtime($i)} = "Water";
   $i += $delta;
-  print "earth:\t"  . localtime($i) . "\n\n";
+  $table{localtime($i)} = "Earth";
 }
 
-print "Sunset local: " . localtime($sunset) . "\n\n";
+my $htmlStr = <<HTML;
+Content-Type: text/html; charset=ISO-8859-1
 
-print header,
-  start_html(-title=>"Elemental Tides"),
-  h1("Elemental Tides"),
-  end_html;
+<!DOCTYPE HTML>
+<html>
+    <head>
+    </head>
+
+    <body>
+    <table border=1>
+    <TMPL_LOOP name=ElementalTides>  <tr>
+        <td><TMPL_VAR name=element /></td>
+        <td><TMPL_VAR name=tide /></td>
+      </tr>
+    </TMPL_LOOP></table>
+    </body>
+</html>
+HTML
+
+my @list = map {{ Element => $table{$_}, tide => $_}} sort keys %table;
+my $template = HTML::Template->new(scalarref => \$htmlStr);
+
+$template->param(ElementalTides => \@list);
+print $template->output();
