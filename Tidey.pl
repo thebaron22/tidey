@@ -8,10 +8,17 @@ use LWP::Simple;
 use JSON;
 use Data::Dumper;
 use DateTime;
+use CGI ':standard';
 
 my $TZ = 'Australia/Sydney';
-my $lat = "-33.79";
-my $long = "151.02";
+
+# North Parramatta
+#my $lat = "-33.79";
+#my $long = "151.02";
+
+# Sydney
+my $lat = "-33.8671390";
+my $long = "151.2071140";
 
 my $url = "https://api.sunrise-sunset.org/json?lat=$lat&lng=$long&formatted=0";
 my $json = get $url || die "Couldn't get $url";
@@ -50,9 +57,23 @@ print "Sunset - Sunrise: " . ($sunset - $sunrise)/3600 . "\n\n";
 print "Sunrise local: " . localtime($sunrise) . "\n\n";
 
 my $delta = ($sunset - $sunrise) / 30;
+print "Delta: " . $delta / 60 . "\n\n";
 
 for (my $i = $sunrise; $i < $sunset; $i += $delta) {
-  print localtime($i) . "\n";
+  print "spirit:\t" . localtime($i) . "\n";
+  $i += $delta;
+  print "air:\t"    . localtime($i) . "\n";
+  $i += $delta;
+  print "fire:\t"   . localtime($i) . "\n";
+  $i += $delta;
+  print "water:\t"  . localtime($i) . "\n";
+  $i += $delta;
+  print "earth:\t"  . localtime($i) . "\n\n";
 }
 
 print "Sunset local: " . localtime($sunset) . "\n\n";
+
+print header,
+  start_html(-title=>"Elemental Tides"),
+  h1("Elemental Tides"),
+  end_html;
