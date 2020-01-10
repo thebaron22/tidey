@@ -11,6 +11,7 @@ use HTML::Template;
 
 my $TZ = 'Australia/Sydney';
 
+my $date = '2020-01-11';
 # North Parramatta
 #my $lat = "-33.79";
 #my $long = "151.02";
@@ -19,7 +20,7 @@ my $TZ = 'Australia/Sydney';
 my $lat = "-33.8671390";
 my $long = "151.2071140";
 
-my $url = "https://api.sunrise-sunset.org/json?lat=$lat&lng=$long&formatted=0";
+my $url = "https://api.sunrise-sunset.org/json?lat=$lat&lng=$long&date=$date&formatted=0";
 my $json = get $url || die "Couldn't get $url";
 
 my $hash = from_json($json);
