@@ -3,10 +3,12 @@
 use strict;
 use warnings;
 
-use Time::Strptime qw/strptime/;
-use LWP::Simple;
-use JSON;
 use DateTime;
+use DateTime::Format::Strptime;
+
+use JSON;
+
+use LWP::Simple;
 use HTML::Template;
 
 my $TZ = 'Australia/Sydney';
@@ -29,14 +31,23 @@ die "error received in sunset/sunrise data.\n\n$json" unless $hash->{'status'} e
 my $sunset  = $hash->{'results'}{'sunset'};
 my $sunrise = $hash->{'results'}{'sunrise'};
 
+my $strp = DateTime::Format::Strptime->new(
+  pattern   => '%Y-%m-%dT%H:%M:%S%z',
+  locale    => 'en_AU',
+  time_zone => 'Australia/Sydney',
+);
 
-$sunrise =~ s/\:(..)$/$1/;
-my $fmt = Time::Strptime::Format->new('%Y-%m-%dT%H:%M:%S%z', { time_zone => $TZ });
-($sunrise, my $offset) = $fmt->parse($sunrise);
+my $dt = $strp->parse_datetime($sunrise);
+$sunrise = $dt->epoch;
 
-$sunset =~ s/\:(..)$/$1/;
-$fmt = Time::Strptime::Format->new('%Y-%m-%dT%H:%M:%S%z', { time_zone => $TZ });
-($sunset, $offset) = $fmt->parse($sunset);
+print  $dt->epoch . "\n";
+print "sunrise: " . $sunrise . "\n";
+
+$dt = $strp->parse_datetime($sunset);
+$sunset = $dt->epoch;
+
+print  $dt->epoch . "\n";
+print "sunrise: " . $sunrise . "\n";
 
 my $delta = ($sunset - $sunrise) / 30;
 my %table;
