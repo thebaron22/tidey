@@ -31,14 +31,15 @@ void Rise::setdate(int x, int y, int z) {
   qDebug() << x << y << z;
 
   // calculate the julian day number of the date at 12:00 localtime
-  tjd = swe_julday(year,month,day,12,gregflag);
+  tjd = swe_julday(year,month,day,0,gregflag);
 
   // convert geographic longitude to time (day fraction) and subtract it from tjd
   // this method should be good for all geographic latitudes except near in
   // polar regions
+  qDebug() << "Set Julian day: " <<  QString::number(tjd,'f');
   dt =  geopos[0] / 360.0;
-  // tjd = tjd - dt;
-  qDebug() << "Julian day: " << int(tjd);
+  tjd = tjd - dt;
+  qDebug() << "Set Julian day: " <<  QString::number(tjd,'f');
 };
 
 int Rise::calc(){
