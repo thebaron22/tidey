@@ -35,10 +35,10 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = tidey1.0.0
-DISTDIR = /home/mick/qt/tidey/.tmp/tidey1.0.0
+DISTDIR = /home/mick/tidey/.tmp/tidey1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-O1
-LIBS          = $(SUBLIBS) -lQt5Widgets -lQt5Gui -lQt5Core -lGLESv2 -lpthread -latomic 
+LIBS          = $(SUBLIBS) -lswe -lQt5Widgets -lQt5Gui -lQt5Core -lGLESv2 -lpthread -latomic 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -51,9 +51,11 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = astro.cpp \
-		main.cpp moc_astro.cpp
+		main.cpp \
+		rise.cpp moc_astro.cpp
 OBJECTS       = astro.o \
 		main.o \
+		rise.o \
 		moc_astro.o
 DIST          = /usr/lib/arm-linux-gnueabihf/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/arm-linux-gnueabihf/qt5/mkspecs/common/unix.conf \
@@ -129,8 +131,10 @@ DIST          = /usr/lib/arm-linux-gnueabihf/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/arm-linux-gnueabihf/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/arm-linux-gnueabihf/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/arm-linux-gnueabihf/qt5/mkspecs/features/lex.prf \
-		tidey.pro astro.h astro.cpp \
-		main.cpp
+		tidey.pro astro.h \
+		rise.h astro.cpp \
+		main.cpp \
+		rise.cpp
 QMAKE_TARGET  = tidey
 DESTDIR       = 
 TARGET        = tidey
@@ -314,8 +318,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/arm-linux-gnueabihf/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents astro.h $(DISTDIR)/
-	$(COPY_FILE) --parents astro.cpp main.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents astro.h rise.h $(DISTDIR)/
+	$(COPY_FILE) --parents astro.cpp main.cpp rise.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -353,7 +357,7 @@ compiler_moc_header_clean:
 moc_astro.cpp: astro.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/mick/qt/tidey/moc_predefs.h -I/usr/lib/arm-linux-gnueabihf/qt5/mkspecs/linux-g++ -I/home/mick/qt/tidey -I/home/mick/qt/tidey -I/usr/include/arm-linux-gnueabihf/qt5 -I/usr/include/arm-linux-gnueabihf/qt5/QtWidgets -I/usr/include/arm-linux-gnueabihf/qt5/QtGui -I/usr/include/arm-linux-gnueabihf/qt5/QtCore -I/usr/include/c++/8 -I/usr/include/arm-linux-gnueabihf/c++/8 -I/usr/include/c++/8/backward -I/usr/lib/gcc/arm-linux-gnueabihf/8/include -I/usr/local/include -I/usr/lib/gcc/arm-linux-gnueabihf/8/include-fixed -I/usr/include/arm-linux-gnueabihf -I/usr/include astro.h -o moc_astro.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/mick/tidey/moc_predefs.h -I/usr/lib/arm-linux-gnueabihf/qt5/mkspecs/linux-g++ -I/home/mick/tidey -I/home/mick/tidey -I/usr/include/arm-linux-gnueabihf/qt5 -I/usr/include/arm-linux-gnueabihf/qt5/QtWidgets -I/usr/include/arm-linux-gnueabihf/qt5/QtGui -I/usr/include/arm-linux-gnueabihf/qt5/QtCore -I/usr/include/c++/8 -I/usr/include/arm-linux-gnueabihf/c++/8 -I/usr/include/c++/8/backward -I/usr/lib/gcc/arm-linux-gnueabihf/8/include -I/usr/local/include -I/usr/lib/gcc/arm-linux-gnueabihf/8/include-fixed -I/usr/include/arm-linux-gnueabihf -I/usr/include astro.h -o moc_astro.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -376,6 +380,9 @@ astro.o: astro.cpp astro.h
 
 main.o: main.cpp astro.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
+
+rise.o: rise.cpp rise.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o rise.o rise.cpp
 
 moc_astro.o: moc_astro.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_astro.o moc_astro.cpp

@@ -5,6 +5,7 @@
 TEMPLATE = app
 TARGET = tidey
 INCLUDEPATH += .
+LIBS += -lswe
 
 QT += gui
 QT += widgets
@@ -21,5 +22,5 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 # Input
-HEADERS += astro.h
-SOURCES += astro.cpp main.cpp
+HEADERS += astro.h rise.h
+SOURCES += astro.cpp main.cpp rise.cpp
