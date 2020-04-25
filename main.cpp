@@ -11,7 +11,7 @@ int main(int argc, char **argv) {
 
  qDebug() << "Main...";
 
- Rise rise(-33.818538, 150.995233, 59);
+ Rise rise(-33.818538, 150.995233, 87);
 
  double srise = rise.getriseJ();
 
@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
  QDateTime dt = rise.getriseQ();
  qDebug() << "Main Sunrise..." << dt << dt.toString() << dt.toUTC().toString();
 
- Astro astro;
+ //Astro astro;
 
  return 0;
  //return app.exec();

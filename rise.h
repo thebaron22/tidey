@@ -6,7 +6,7 @@
 
 class Rise {
 
-    char serr[AS_MAXCH];
+    char serr[AS_MAXCH]; // for library error messages
 
     // array for atmospheric conditions
     double datm[2];
@@ -14,13 +14,10 @@ class Rise {
     // Location Lat, Long, height above sea level
     double geopos[3];
 
-    char starname[255] = ""; // name of star, if a star's rising is wanted
-                      // is "" or NULL, if Sun, Moon, or planet is calculated
-
     double trise; // for rising time
     double tset;  // for setting time
 
-    double tjd;
+    double tjd; // for Julian date
 
     // Sunrise UTC results
     int rise_year;
