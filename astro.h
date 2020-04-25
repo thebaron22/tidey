@@ -13,10 +13,11 @@ class Astro : public QObject
 
 public:
     Astro();
-    void Load();
+    void loadChart();
+    void updateLabel();
 
 public slots:
-    void TimerSlot();
+    void timerSlot();
 };
 
 #endif // ASTRO_H

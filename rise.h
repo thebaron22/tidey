@@ -6,18 +6,18 @@
 
 class Rise {
 
-    char serr[AS_MAXCH]; // for library error messages
+    char serr[AS_MAXCH]; // for swe library error messages
 
     // array for atmospheric conditions
     double datm[2];
 
-    // Location Lat, Long, height above sea level
+    // Location Long, Lat, height above sea level
     double geopos[3];
 
-    double trise; // for rising time
-    double tset;  // for setting time
+    double trise; // for calculated rising time
+    double tset;  // for calculated setting time
 
-    double tjd; // for Julian date
+    double tjd; // for calculated Julian date
 
     // Sunrise UTC results
     int rise_year;
@@ -37,13 +37,13 @@ class Rise {
 
   public:
     Rise(double x, double y, double z);
-    void setdate();
-    void setdate(QDateTime);
+    void setDate();
+    void setDate(QDateTime);
     int calc();
-    double getriseJ();
-    double getsetJ();
-    QDateTime getriseQ();
-    QDateTime getsetQ();
+    double getRiseJ();
+    double getSetJ();
+    QDateTime getRiseQ();
+    QDateTime getSetQ();
 
 };
 
