@@ -19,57 +19,63 @@ Rise::Rise(double x, double y, double z) {
 
 void Rise::setdate() {
   QDateTime qdt = QDateTime::currentDateTime();
-  qDebug() << qdt.toString() << qdt.toString("yyyy") << qdt.toString("yyyy").toInt();
-  setdate(qdt.toString("yyyy").toInt(), qdt.toString("MM").toInt(), qdt.toString("dd").toInt());
+  qDebug() << qdt.toString() << qdt.toString("yyyy") << qdt.toString("yyyy").toInt() << qdt.toUTC();
+  setdate(qdt.toUTC());
 }
 
-void Rise::setdate(int x, int y, int z) {
-  year = x;
-  month = y;
-  day = z;
-      
-  qDebug() << x << y << z;
+void Rise::setdate(QDateTime qdt) {
 
-  // calculate the julian day number of the date at 12:00 localtime
-  tjd = swe_julday(year,month,day,0,gregflag);
+  double hrs = (qdt.toString("hh").toDouble() + qdt.toString("mm").toDouble()/60 + qdt.toString("ss").toDouble()/3600)/24;
+  hrs = 22;
 
-  // convert geographic longitude to time (day fraction) and subtract it from tjd
-  // this method should be good for all geographic latitudes except near in
-  // polar regions
-  qDebug() << "Set Julian day: " <<  QString::number(tjd,'f');
-  dt =  geopos[0] / 360.0;
-  tjd = tjd - dt;
+  tjd = swe_julday(qdt.toString("yyyy").toInt(), qdt.toString("MM").toInt(), qdt.toString("dd").toInt(), hrs, SE_GREG_CAL);
+
+  qDebug() << "Set Julian day: " <<  QString::number(tjd,'f') << hrs;
+  //dt =  geopos[0] / 360.0;
+  tjd = tjd - geopos[0] / 360.0;
   qDebug() << "Set Julian day: " <<  QString::number(tjd,'f');
 };
 
 int Rise::calc(){
 
   int return_code;
-  return_code = swe_rise_trans(tjd, ipl, starname, epheflag, SE_CALC_RISE, geopos, datm[0], datm[1], &trise, serr);
+  return_code = swe_rise_trans(tjd, SE_SUN, starname, SEFLG_SWIEPH, SE_CALC_RISE, geopos, datm[0], datm[1], &trise, serr);
 
   if (return_code == ERR) {
     printf("%s\n", serr);
     return 1;
   }
 
-  swe_jdet_to_utc(trise, gregflag, &rise_year, &rise_month, &rise_day, &rise_hour, &rise_min, &rise_sec);
+  qDebug() << "Calc..." << QString::number(trise, 'f');
 
-  return_code = swe_rise_trans(trise, ipl, starname, epheflag, SE_CALC_SET, geopos, datm[0], datm[1], &tset, serr);
+  swe_jdet_to_utc(trise, SE_GREG_CAL, &rise_year, &rise_month, &rise_day, &rise_hour, &rise_min, &rise_sec);
+
+  return_code = swe_rise_trans(trise, SE_SUN, starname, SEFLG_SWIEPH, SE_CALC_SET, geopos, datm[0], datm[1], &tset, serr);
 
   if (return_code == ERR) {
     printf("%s\n", serr);
     return 1;
   }
     
-  swe_jdet_to_utc(tset, gregflag, &set_year, &set_month, &set_day, &set_hour, &set_min, &set_sec);
+  swe_jdet_to_utc(tset, SE_GREG_CAL, &set_year, &set_month, &set_day, &set_hour, &set_min, &set_sec);
 
   return 0;
 };
 
-double Rise::getrise() {
+double Rise::getriseJ() {
   return trise;
 };
 
-double Rise::getset() {
+double Rise::getsetJ() {
   return tset;
+};
+
+QDateTime Rise::getriseQ() {
+  QDateTime qdt(QDate(rise_year, rise_month, rise_day), QTime(rise_hour, rise_min, rise_sec), Qt::UTC);
+  return qdt.toTimeSpec(Qt::LocalTime);
+};
+
+QDateTime Rise::getsetQ() {
+  QDateTime qdt(QDate(set_year, set_month, set_day), QTime(set_hour, set_min, set_sec), Qt::UTC);
+  return qdt.toTimeSpec(Qt::LocalTime);
 };
