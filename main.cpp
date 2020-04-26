@@ -4,6 +4,7 @@
 
 #include "rise.h"
 #include "astro.h"
+#include "tattwa.h"
 
 int main(int argc, char **argv) {
 
@@ -15,6 +16,7 @@ int main(int argc, char **argv) {
  qDebug() << "Main Sunrise..." << qdt << qdt.toString() << qdt.toUTC().toString();
 
  //Astro astro;
+ Tattwa tattwa(&rise);
 
  return app.exec();
 

@@ -50,13 +50,17 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = astro.cpp \
-		main.cpp \
-		rise.cpp moc_astro.cpp
-OBJECTS       = astro.o \
-		main.o \
+SOURCES       = main.cpp \
+		astro.cpp \
+		rise.cpp \
+		tattwa.cpp moc_astro.cpp \
+		moc_tattwa.cpp
+OBJECTS       = main.o \
+		astro.o \
 		rise.o \
-		moc_astro.o
+		tattwa.o \
+		moc_astro.o \
+		moc_tattwa.o
 DIST          = /usr/lib/arm-linux-gnueabihf/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/arm-linux-gnueabihf/qt5/mkspecs/common/unix.conf \
 		/usr/lib/arm-linux-gnueabihf/qt5/mkspecs/common/linux.conf \
@@ -132,9 +136,11 @@ DIST          = /usr/lib/arm-linux-gnueabihf/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/arm-linux-gnueabihf/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/arm-linux-gnueabihf/qt5/mkspecs/features/lex.prf \
 		tidey.pro astro.h \
-		rise.h astro.cpp \
-		main.cpp \
-		rise.cpp
+		rise.h \
+		tattwa.h main.cpp \
+		astro.cpp \
+		rise.cpp \
+		tattwa.cpp
 QMAKE_TARGET  = tidey
 DESTDIR       = 
 TARGET        = tidey
@@ -318,8 +324,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/arm-linux-gnueabihf/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents astro.h rise.h $(DISTDIR)/
-	$(COPY_FILE) --parents astro.cpp main.cpp rise.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents astro.h rise.h tattwa.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp astro.cpp rise.cpp tattwa.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -351,13 +357,18 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/lib/arm-linux-gnueabihf/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -Wall -W -dM -E -o moc_predefs.h /usr/lib/arm-linux-gnueabihf/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_astro.cpp
+compiler_moc_header_make_all: moc_astro.cpp moc_tattwa.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_astro.cpp
+	-$(DEL_FILE) moc_astro.cpp moc_tattwa.cpp
 moc_astro.cpp: astro.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/mick/tidey/moc_predefs.h -I/usr/lib/arm-linux-gnueabihf/qt5/mkspecs/linux-g++ -I/home/mick/tidey -I/home/mick/tidey -I/usr/include/arm-linux-gnueabihf/qt5 -I/usr/include/arm-linux-gnueabihf/qt5/QtWidgets -I/usr/include/arm-linux-gnueabihf/qt5/QtGui -I/usr/include/arm-linux-gnueabihf/qt5/QtCore -I/usr/include/c++/8 -I/usr/include/arm-linux-gnueabihf/c++/8 -I/usr/include/c++/8/backward -I/usr/lib/gcc/arm-linux-gnueabihf/8/include -I/usr/local/include -I/usr/lib/gcc/arm-linux-gnueabihf/8/include-fixed -I/usr/include/arm-linux-gnueabihf -I/usr/include astro.h -o moc_astro.cpp
+
+moc_tattwa.cpp: tattwa.h \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/mick/tidey/moc_predefs.h -I/usr/lib/arm-linux-gnueabihf/qt5/mkspecs/linux-g++ -I/home/mick/tidey -I/home/mick/tidey -I/usr/include/arm-linux-gnueabihf/qt5 -I/usr/include/arm-linux-gnueabihf/qt5/QtWidgets -I/usr/include/arm-linux-gnueabihf/qt5/QtGui -I/usr/include/arm-linux-gnueabihf/qt5/QtCore -I/usr/include/c++/8 -I/usr/include/arm-linux-gnueabihf/c++/8 -I/usr/include/c++/8/backward -I/usr/lib/gcc/arm-linux-gnueabihf/8/include -I/usr/local/include -I/usr/lib/gcc/arm-linux-gnueabihf/8/include-fixed -I/usr/include/arm-linux-gnueabihf -I/usr/include tattwa.h -o moc_tattwa.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -375,17 +386,25 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 
 ####### Compile
 
+main.o: main.cpp rise.h \
+		astro.h \
+		tattwa.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
+
 astro.o: astro.cpp astro.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o astro.o astro.cpp
-
-main.o: main.cpp astro.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
 rise.o: rise.cpp rise.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o rise.o rise.cpp
 
+tattwa.o: tattwa.cpp tattwa.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o tattwa.o tattwa.cpp
+
 moc_astro.o: moc_astro.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_astro.o moc_astro.cpp
+
+moc_tattwa.o: moc_tattwa.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_tattwa.o moc_tattwa.cpp
 
 ####### Install
 

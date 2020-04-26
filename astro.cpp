@@ -14,14 +14,16 @@ Astro::Astro()
 
 };
 
-void Astro::loadChart() {
+void Astro::loadChart()
+{
   QString program = "astrolog";
   QStringList arguments;
   QProcess *myProcess = new QProcess();
   myProcess->start(program, arguments);
   
   chart.load("/tmp/astro.log");
-}
+};
+
 void Astro::updateLabel() {
   label.setPixmap(chart);
   label.showMaximized();
@@ -32,4 +34,5 @@ void Astro::timerSlot()
   qDebug() << "Astro Timer...";
   loadChart();
   updateLabel();
-}
+};
+
